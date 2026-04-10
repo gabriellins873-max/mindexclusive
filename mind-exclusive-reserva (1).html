@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mind Exclusive — Reserve a sua camiseta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{min-height:100vh;background:#d8d4cc;}
+  body{font-family:'Inter',sans-serif;color:#1a1a1a;display:flex;flex-direction:column;align-items:center;}
+
+  .hero{width:100%;max-width:520px;background:#ccc9c1;padding:3.5rem 2.5rem 2.5rem;text-align:center;position:relative;overflow:hidden;}
+  .hero-sub{font-size:11px;letter-spacing:0.4em;text-transform:uppercase;color:#5a5850;margin-bottom:6px;}
+  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,14vw,6rem);line-height:0.9;color:#1a1a1a;letter-spacing:0.02em;}
+  .hero-title span{color:#5a5850;}
+  .hero-tagline{font-size:14px;color:#5a5850;margin-top:1.2rem;letter-spacing:0.05em;font-style:italic;}
+  .hero-date{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.2em;color:#1a1a1a;margin-top:0.4rem;}
+
+  .stock-wrap{width:100%;max-width:520px;background:#c5c1b9;padding:1.25rem 2.5rem;border-top:1px solid #b8b4ac;border-bottom:1px solid #b8b4ac;}
+  .stock-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .stock-lbl{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#6a6660;}
+  .stock-num{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;color:#1a1a1a;}
+  .stock-num em{color:#5a5850;font-style:normal;}
+  .bar-track{height:2px;background:#aeaaa2;width:100%;}
+  .bar-fill{height:100%;background:#1a1a1a;transition:width 0.4s ease;}
+  .slots{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap;}
+  .slot{width:26px;height:26px;border:1px solid #aeaaa2;display:flex;align-items:center;justify-content:center;}
+  .slot.rsv{background:#b8b4ac;border-color:#8a8880;}
+  .slot.avail{background:#ccc9c1;}
+  .slot.mine{background:#1a1a1a;border-color:#1a1a1a;animation:blink 1.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+  .form-wrap{width:100%;max-width:520px;background:#d8d4cc;padding:2.5rem 2.5rem 4rem;}
+  .section-label{font-size:10px;letter-spacing:0.35em;text-transform:uppercase;color:#6a6660;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;}
+  .section-label::after{content:'';flex:1;height:1px;background:#b8b4ac;}
+
+  .urgency{display:inline-flex;align-items:center;gap:8px;background:#c5c1b9;border:1px solid #aeaaa2;padding:7px 14px;margin-bottom:1.75rem;}
+  .urgency-dot{width:6px;height:6px;border-radius:50%;background:#1a1a1a;animation:blink 1.2s infinite;flex-shrink:0;}
+  .urgency-text{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#3a3830;}
+
+  .field-group{margin-bottom:1.25rem;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;}
+  .fl{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#6a6660;display:block;margin-bottom:6px;font-weight:500;}
+  input,textarea{width:100%;background:#ccc9c1;border:1px solid #aeaaa2;padding:12px 14px;font-family:'Inter',sans-serif;font-size:14px;color:#1a1a1a;outline:none;transition:border-color 0.15s;-webkit-appearance:none;border-radius:0;}
+  input:focus,textarea:focus{border-color:#1a1a1a;}
+  input::placeholder,textarea::placeholder{color:#9a9890;}
+  textarea{resize:none;height:80px;line-height:1.5;}
+  input.err{border-color:#8a3020;}
+  .errmsg{font-size:11px;color:#8a3020;margin-top:4px;display:none;}
+
+  .size-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+  .sz{background:#ccc9c1;border:1px solid #aeaaa2;padding:11px 4px;font-size:12px;letter-spacing:0.1em;color:#6a6660;cursor:pointer;text-align:center;transition:all 0.12s;font-family:'Inter',sans-serif;text-transform:uppercase;-webkit-appearance:none;}
+  .sz:hover{border-color:#5a5850;color:#1a1a1a;}
+  .sz.on{border-color:#1a1a1a;color:#1a1a1a;background:#c5c1b9;font-weight:500;}
+
+  .qty-wrap{display:flex;align-items:center;border:1px solid #aeaaa2;width:fit-content;}
+  .qbtn{background:#ccc9c1;border:none;padding:10px 18px;font-size:18px;color:#6a6660;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.12s;line-height:1;}
+  .qbtn:hover{background:#c5c1b9;color:#1a1a1a;}
+  .qbtn:disabled{opacity:0.3;cursor:not-allowed;}
+  .qnum{padding:10px 20px;font-size:14px;color:#1a1a1a;border-left:1px solid #aeaaa2;border-right:1px solid #aeaaa2;min-width:48px;text-align:center;font-weight:500;}
+
+  .divider{height:1px;background:#b8b4ac;margin:1.5rem 0;}
+  .total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.5rem;}
+  .total-lbl{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#6a6660;}
+  .total-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.05em;color:#1a1a1a;}
+
+  .note{font-size:12px;color:#7a7870;text-align:center;line-height:1.7;margin-bottom:1.5rem;}
+  .sub-btn{width:100%;background:#1a1a1a;border:none;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.3em;color:#d8d4cc;cursor:pointer;transition:background 0.2s;text-transform:uppercase;}
+  .sub-btn:hover{background:#2e2e2e;}
+  .sub-btn:active{transform:scale(0.99);}
+
+  .success{display:none;flex-direction:column;align-items:center;text-align:center;padding:5rem 2rem;gap:1rem;width:100%;max-width:520px;}
+  .success-mark{width:56px;height:56px;border:1px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;}
+  .success-title{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:0.05em;color:#1a1a1a;}
+  .success-sub{font-size:14px;color:#6a6660;line-height:1.7;max-width:320px;}
+  .success-ref{font-size:10px;letter-spacing:0.3em;color:#3a3830;margin-top:0.5rem;text-transform:uppercase;}
+
+  .footer{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#9a9890;text-align:center;padding:2rem 0;border-top:1px solid #b8b4ac;width:100%;max-width:520px;}
+
+  @media(max-width:480px){
+    .field-row{grid-template-columns:1fr;}
+    .hero{padding:2.5rem 1.5rem 2rem;}
+    .form-wrap{padding:1.5rem 1.5rem 3rem;}
+    .stock-wrap{padding:1.25rem 1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="hero-sub">©2026 · Mind</p>
+  <h1 class="hero-title">ALGO<br><span>EXCLU</span>SIVO</h1>
+  <p class="hero-tagline">Só para quem estava lá.</p>
+  <p class="hero-date">21 · 04</p>
+</div>
+
+<div class="stock-wrap">
+  <div class="stock-row">
+    <span class="stock-lbl">Disponibilidade</span>
+    <span class="stock-num"><em id="avail-n">13</em> / 15</span>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="bfill" style="width:13.3%"></div></div>
+  <div class="slots" id="slots"></div>
+</div>
+
+<div class="form-wrap" id="form-wrap">
+  <p class="section-label">Reserva</p>
+  <div class="urgency">
+    <div class="urgency-dot"></div>
+    <span class="urgency-text">2 peças já reservadas</span>
+  </div>
+
+  <div class="field-row">
+    <div><label class="fl">Nome</label><input type="text" id="nome" placeholder="Seu nome" autocomplete="given-name" /></div>
+    <div><label class="fl">Sobrenome</label><input type="text" id="sob" placeholder="Sobrenome" autocomplete="family-name" /></div>
+  </div>
+  <div class="field-group">
+    <label class="fl">E-mail</label>
+    <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
+    <span class="errmsg" id="e-email">Insira um e-mail válido</span>
+  </div>
+  <div class="field-group">
+    <label class="fl">WhatsApp</label>
+    <input type="tel" id="wpp" placeholder="(11) 99999-9999" autocomplete="tel" />
+    <span class="errmsg" id="e-wpp">Insira um número válido</span>
+  </div>
+  <div class="field-group">
+    <label class="fl">Tamanho</label>
+    <div class="size-grid">
+      <button class="sz" data-s="PP">PP</button>
+      <button class="sz" data-s="P">P</button>
+      <button class="sz on" data-s="M">M</button>
+      <button class="sz" data-s="G">G</button>
+      <button class="sz" data-s="GG">GG</button>
+    </div>
+  </div>
+  <div class="field-group">
+    <label class="fl">Quantidade</label>
+    <div class="qty-wrap">
+      <button class="qbtn" id="qminus" aria-label="Diminuir">−</button>
+      <div class="qnum" id="qnum">1</div>
+      <button class="qbtn" id="qplus" aria-label="Aumentar">+</button>
+    </div>
+    <span class="errmsg" id="e-qty" style="display:none">Quantidade excede o estoque disponível</span>
+  </div>
+  <div class="divider"></div>
+  <div class="total-row">
+    <span class="total-lbl">Total estimado</span>
+    <span class="total-val" id="total">R$ 149</span>
+  </div>
+  <div class="field-group">
+    <label class="fl">Observações (opcional)</label>
+    <textarea id="obs" placeholder="Algum detalhe adicional..."></textarea>
+  </div>
+  <p class="note">Confirmação por e-mail e WhatsApp · Pagamento combinado na sequência</p>
+  <button class="sub-btn" id="subbtn">Reservar agora</button>
+</div>
+
+<div class="success" id="success">
+  <div class="success-mark">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <path d="M4 11l4 4L18 6" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <p class="success-title">Reservado.</p>
+  <p class="success-sub">Entraremos em contato pelo WhatsApp e e-mail para confirmar os próximos passos do seu pedido.</p>
+  <p class="success-ref" id="sref">Ref #ME-0000</p>
+</div>
+
+<div class="footer">©2026 · Mind · Edição limitada — 15 peças</div>
+
+<script>
+  const TOTAL = 15, PRICE = 149;
+  let reserved = 2, qty = 1, size = 'M';
+
+  function avail() { return TOTAL - reserved; }
+
+  function renderSlots(h) {
+    const g = document.getElementById('slots');
+    g.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot';
+      if (i < reserved) {
+        s.classList.add('rsv');
+        s.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#3a3830" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      } else if (h && i >= reserved && i < reserved + h) {
+        s.classList.add('mine');
+      } else {
+        s.classList.add('avail');
+      }
+      g.appendChild(s);
+    }
+  }
+
+  function updateBar(h) {
+    const used = reserved + (h || 0);
+    document.getElementById('bfill').style.width = (used / TOTAL * 100).toFixed(1) + '%';
+    document.getElementById('avail-n').textContent = avail() - (h || 0);
+    renderSlots(h || 0);
+  }
+
+  function updateQty(v) {
+    const max = avail();
+    if (v > max) { document.getElementById('e-qty').style.display = 'block'; v = max; }
+    else { document.getElementById('e-qty').style.display = 'none'; }
+    qty = Math.max(1, v);
+    document.getElementById('qnum').textContent = qty;
+    document.getElementById('total').textContent = 'R$ ' + (qty * PRICE).toLocaleString('pt-BR');
+    document.getElementById('qminus').disabled = qty <= 1;
+    document.getElementById('qplus').disabled = qty >= max;
+    updateBar(qty);
+  }
+
+  updateBar(0);
+  updateQty(1);
+
+  document.querySelectorAll('.sz').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.sz').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); size = b.dataset.s;
+    });
+  });
+
+  document.getElementById('qminus').addEventListener('click', () => updateQty(qty - 1));
+  document.getElementById('qplus').addEventListener('click', () => updateQty(qty + 1));
+
+  const wpp = document.getElementById('wpp');
+  wpp.addEventListener('input', () => {
+    let v = wpp.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 6) v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+    else if (v.length > 2) v = '(' + v.slice(0,2) + ') ' + v.slice(2);
+    wpp.value = v;
+    document.getElementById('e-wpp').style.display = 'none';
+    wpp.classList.remove('err');
+  });
+
+  document.getElementById('email').addEventListener('input', () => {
+    document.getElementById('e-email').style.display = 'none';
+    document.getElementById('email').classList.remove('err');
+  });
+
+  document.getElementById('subbtn').addEventListener('click', () => {
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const tel = document.getElementById('wpp').value.replace(/\D/g, '');
+    let ok = true;
+    if (!nome) { document.getElementById('nome').focus(); ok = false; }
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      document.getElementById('e-email').style.display = 'block';
+      document.getElementById('email').classList.add('err'); ok = false;
+    }
+    if (tel.length < 10) {
+      document.getElementById('e-wpp').style.display = 'block';
+      wpp.classList.add('err'); ok = false;
+    }
+    if (!ok) return;
+    reserved += qty;
+    document.getElementById('form-wrap').style.display = 'none';
+    const sc = document.getElementById('success');
+    sc.style.display = 'flex';
+    document.getElementById('sref').textContent = 'Ref #ME-' + Math.floor(Math.random() * 9000 + 1000);
+    updateBar(0);
+  });
+</script>
+</body>
+</html>
