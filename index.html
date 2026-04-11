@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,10 +7,22 @@
 <title>Mind Exclusive — Reserve a sua camiseta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{min-height:100vh;background:#d8d4cc;}
   body{font-family:'Inter',sans-serif;color:#1a1a1a;display:flex;flex-direction:column;align-items:center;}
+
+  /* ADMIN PANEL */
+  .admin-bar{width:100%;max-width:520px;background:#1a1a1a;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .admin-label{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#666;white-space:nowrap;}
+  .admin-controls{display:flex;align-items:center;gap:0;border:1px solid #333;}
+  .admin-btn{background:#1a1a1a;border:none;padding:7px 14px;font-size:15px;color:#666;cursor:pointer;line-height:1;transition:color 0.15s;}
+  .admin-btn:hover{color:#d8d4cc;}
+  .admin-num{padding:7px 14px;font-size:13px;color:#d8d4cc;border-left:1px solid #333;border-right:1px solid #333;min-width:36px;text-align:center;font-weight:500;}
+  .admin-save{background:#b8a07a;border:none;padding:7px 14px;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;white-space:nowrap;}
+  .admin-save:hover{background:#cbb996;}
+  .admin-saved{font-size:10px;letter-spacing:0.15em;color:#b8a07a;text-transform:uppercase;opacity:0;transition:opacity 0.3s;}
 
   .hero{width:100%;max-width:520px;background:#ccc9c1;padding:3.5rem 2.5rem 2.5rem;text-align:center;position:relative;overflow:hidden;}
   .hero-sub{font-size:11px;letter-spacing:0.4em;text-transform:uppercase;color:#5a5850;margin-bottom:6px;}
@@ -51,12 +64,12 @@
   .errmsg{font-size:11px;color:#8a3020;margin-top:4px;display:none;}
 
   .size-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
-  .sz{background:#ccc9c1;border:1px solid #aeaaa2;padding:11px 4px;font-size:12px;letter-spacing:0.1em;color:#6a6660;cursor:pointer;text-align:center;transition:all 0.12s;font-family:'Inter',sans-serif;text-transform:uppercase;-webkit-appearance:none;}
+  .sz{background:#ccc9c1;border:1px solid #aeaaa2;padding:11px 4px;font-size:12px;letter-spacing:0.1em;color:#6a6660;cursor:pointer;text-align:center;transition:all 0.12s;font-family:'Inter',sans-serif;text-transform:uppercase;-webkit-appearance:none;border-radius:0;}
   .sz:hover{border-color:#5a5850;color:#1a1a1a;}
   .sz.on{border-color:#1a1a1a;color:#1a1a1a;background:#c5c1b9;font-weight:500;}
 
   .qty-wrap{display:flex;align-items:center;border:1px solid #aeaaa2;width:fit-content;}
-  .qbtn{background:#ccc9c1;border:none;padding:10px 18px;font-size:18px;color:#6a6660;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.12s;line-height:1;}
+  .qbtn{background:#ccc9c1;border:none;padding:10px 18px;font-size:18px;color:#6a6660;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.12s;line-height:1;border-radius:0;}
   .qbtn:hover{background:#c5c1b9;color:#1a1a1a;}
   .qbtn:disabled{opacity:0.3;cursor:not-allowed;}
   .qnum{padding:10px 20px;font-size:14px;color:#1a1a1a;border-left:1px solid #aeaaa2;border-right:1px solid #aeaaa2;min-width:48px;text-align:center;font-weight:500;}
@@ -67,10 +80,44 @@
   .total-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.05em;color:#1a1a1a;}
 
   .note{font-size:12px;color:#7a7870;text-align:center;line-height:1.7;margin-bottom:1.5rem;}
-  .sub-btn{width:100%;background:#1a1a1a;border:none;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.3em;color:#d8d4cc;cursor:pointer;transition:background 0.2s;text-transform:uppercase;}
+  .sub-btn{width:100%;background:#1a1a1a;border:none;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.3em;color:#d8d4cc;cursor:pointer;transition:background 0.2s;text-transform:uppercase;border-radius:0;}
   .sub-btn:hover{background:#2e2e2e;}
   .sub-btn:active{transform:scale(0.99);}
 
+  /* PAYMENT PAGE */
+  .payment-wrap{display:none;width:100%;max-width:520px;background:#d8d4cc;padding:2.5rem 2.5rem 4rem;flex-direction:column;}
+
+  .pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;}
+  .pay-opt{background:#ccc9c1;border:1px solid #aeaaa2;padding:16px;cursor:pointer;text-align:center;transition:all 0.15s;}
+  .pay-opt:hover{border-color:#5a5850;}
+  .pay-opt.on{border-color:#1a1a1a;background:#c5c1b9;}
+  .pay-opt-icon{font-size:22px;margin-bottom:6px;display:block;}
+  .pay-opt-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#3a3830;font-weight:500;}
+
+  .pix-panel{display:none;flex-direction:column;align-items:center;gap:1.25rem;padding:1.5rem;background:#c5c1b9;border:1px solid #aeaaa2;margin-bottom:1.5rem;}
+  .pix-panel.show{display:flex;}
+  .pix-key-box{width:100%;background:#ccc9c1;border:1px solid #aeaaa2;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .pix-key-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#6a6660;display:block;margin-bottom:4px;}
+  .pix-key-val{font-size:14px;color:#1a1a1a;font-weight:500;}
+  .pix-copy{background:#1a1a1a;border:none;padding:8px 14px;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#d8d4cc;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;border-radius:0;}
+  .pix-copy:hover{background:#2e2e2e;}
+  .pix-amount{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.05em;color:#1a1a1a;text-align:center;}
+  .pix-amount-lbl{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#6a6660;text-align:center;margin-top:-12px;}
+  #qrcode{background:#fff;padding:12px;display:inline-block;}
+  #qrcode img,#qrcode canvas{display:block;}
+  .qr-note{font-size:11px;color:#6a6660;text-align:center;line-height:1.6;}
+
+  .transfer-panel{display:none;flex-direction:column;gap:1rem;padding:1.5rem;background:#c5c1b9;border:1px solid #aeaaa2;margin-bottom:1.5rem;}
+  .transfer-panel.show{display:flex;}
+  .transfer-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #b8b4ac;}
+  .transfer-row:last-child{border-bottom:none;}
+  .tr-lbl{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#6a6660;}
+  .tr-val{font-size:13px;color:#1a1a1a;font-weight:500;}
+
+  .confirm-btn{width:100%;background:#1a1a1a;border:none;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.3em;color:#d8d4cc;cursor:pointer;transition:background 0.2s;text-transform:uppercase;border-radius:0;}
+  .confirm-btn:hover{background:#2e2e2e;}
+
+  /* SUCCESS */
   .success{display:none;flex-direction:column;align-items:center;text-align:center;padding:5rem 2rem;gap:1rem;width:100%;max-width:520px;}
   .success-mark{width:56px;height:56px;border:1px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;}
   .success-title{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:0.05em;color:#1a1a1a;}
@@ -82,12 +129,27 @@
   @media(max-width:480px){
     .field-row{grid-template-columns:1fr;}
     .hero{padding:2.5rem 1.5rem 2rem;}
-    .form-wrap{padding:1.5rem 1.5rem 3rem;}
+    .form-wrap,.payment-wrap{padding:1.5rem 1.5rem 3rem;}
     .stock-wrap{padding:1.25rem 1.5rem;}
+    .admin-bar{padding:10px 16px;}
   }
 </style>
 </head>
 <body>
+
+<!-- ADMIN BAR -->
+<div class="admin-bar">
+  <span class="admin-label">Peças reservadas</span>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="admin-controls">
+      <button class="admin-btn" id="a-minus">−</button>
+      <div class="admin-num" id="a-num">2</div>
+      <button class="admin-btn" id="a-plus">+</button>
+    </div>
+    <button class="admin-save" id="a-save">Salvar</button>
+    <span class="admin-saved" id="a-saved">Salvo!</span>
+  </div>
+</div>
 
 <div class="hero">
   <p class="hero-sub">©2026 · Mind</p>
@@ -99,17 +161,18 @@
 <div class="stock-wrap">
   <div class="stock-row">
     <span class="stock-lbl">Disponibilidade</span>
-    <span class="stock-num"><em id="avail-n">13</em> / 15</span>
+    <span class="stock-num"><em id="avail-n">13</em> / <span id="total-n">15</span></span>
   </div>
-  <div class="bar-track"><div class="bar-fill" id="bfill" style="width:13.3%"></div></div>
+  <div class="bar-track"><div class="bar-fill" id="bfill"></div></div>
   <div class="slots" id="slots"></div>
 </div>
 
+<!-- FORM PAGE -->
 <div class="form-wrap" id="form-wrap">
   <p class="section-label">Reserva</p>
   <div class="urgency">
     <div class="urgency-dot"></div>
-    <span class="urgency-text">2 peças já reservadas</span>
+    <span class="urgency-text" id="urgency-text">2 peças já reservadas</span>
   </div>
 
   <div class="field-row">
@@ -139,9 +202,9 @@
   <div class="field-group">
     <label class="fl">Quantidade</label>
     <div class="qty-wrap">
-      <button class="qbtn" id="qminus" aria-label="Diminuir">−</button>
+      <button class="qbtn" id="qminus">−</button>
       <div class="qnum" id="qnum">1</div>
-      <button class="qbtn" id="qplus" aria-label="Aumentar">+</button>
+      <button class="qbtn" id="qplus">+</button>
     </div>
     <span class="errmsg" id="e-qty" style="display:none">Quantidade excede o estoque disponível</span>
   </div>
@@ -154,10 +217,60 @@
     <label class="fl">Observações (opcional)</label>
     <textarea id="obs" placeholder="Algum detalhe adicional..."></textarea>
   </div>
-  <p class="note">Confirmação por e-mail e WhatsApp · Pagamento combinado na sequência</p>
-  <button class="sub-btn" id="subbtn">Reservar agora</button>
+  <p class="note">Confirmação por e-mail e WhatsApp · Pagamento na próxima etapa</p>
+  <button class="sub-btn" id="subbtn">Continuar para pagamento</button>
 </div>
 
+<!-- PAYMENT PAGE -->
+<div class="payment-wrap" id="payment-wrap">
+  <p class="section-label">Pagamento</p>
+
+  <div class="total-row" style="margin-bottom:1.75rem;">
+    <span class="total-lbl">Total a pagar</span>
+    <span class="total-val" id="pay-total">R$ 149</span>
+  </div>
+
+  <label class="fl" style="margin-bottom:10px;">Forma de pagamento</label>
+  <div class="pay-methods">
+    <div class="pay-opt on" data-pay="pix" id="opt-pix">
+      <span class="pay-opt-icon">⬡</span>
+      <span class="pay-opt-label">PIX</span>
+    </div>
+    <div class="pay-opt" data-pay="transfer" id="opt-transfer">
+      <span class="pay-opt-icon">⇄</span>
+      <span class="pay-opt-label">Transferência</span>
+    </div>
+  </div>
+
+  <!-- PIX PANEL -->
+  <div class="pix-panel show" id="pix-panel">
+    <div class="pix-amount" id="pix-amount">R$ 149</div>
+    <p class="pix-amount-lbl">valor total</p>
+
+    <div id="qrcode"></div>
+    <p class="qr-note">Escaneie o QR Code com o app do seu banco<br>ou copie a chave PIX abaixo</p>
+
+    <div class="pix-key-box">
+      <div>
+        <span class="pix-key-label">Chave PIX · CNPJ</span>
+        <span class="pix-key-val">62.911.924/0001-05</span>
+      </div>
+      <button class="pix-copy" id="copy-pix">Copiar</button>
+    </div>
+  </div>
+
+  <!-- TRANSFER PANEL -->
+  <div class="transfer-panel" id="transfer-panel">
+    <div class="transfer-row"><span class="tr-lbl">Banco</span><span class="tr-val">— confirmar com vendedor</span></div>
+    <div class="transfer-row"><span class="tr-lbl">CNPJ</span><span class="tr-val">62.911.924/0001-05</span></div>
+    <div class="transfer-row"><span class="tr-lbl">Valor</span><span class="tr-val" id="transfer-total">R$ 149</span></div>
+  </div>
+
+  <p class="note" style="margin-bottom:1.5rem;">Após o pagamento, envie o comprovante pelo WhatsApp para confirmar sua reserva.</p>
+  <button class="confirm-btn" id="confirm-btn">Confirmar reserva</button>
+</div>
+
+<!-- SUCCESS -->
 <div class="success" id="success">
   <div class="success-mark">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -165,15 +278,21 @@
     </svg>
   </div>
   <p class="success-title">Reservado.</p>
-  <p class="success-sub">Entraremos em contato pelo WhatsApp e e-mail para confirmar os próximos passos do seu pedido.</p>
+  <p class="success-sub">Envie o comprovante de pagamento pelo WhatsApp para confirmar sua peça.</p>
   <p class="success-ref" id="sref">Ref #ME-0000</p>
 </div>
 
-<div class="footer">©2026 · Mind · Edição limitada — 15 peças</div>
+<div class="footer">©2026 · Mind · Edição limitada — <span id="footer-total">15</span> peças</div>
 
 <script>
-  const TOTAL = 15, PRICE = 149;
-  let reserved = 2, qty = 1, size = 'M';
+  const PRICE = 149;
+  const PIX_KEY = '62911924000105';
+  const PIX_KEY_DISPLAY = '62.911.924/0001-05';
+
+  let TOTAL = parseInt(localStorage.getItem('mind_total') || '15');
+  let reserved = parseInt(localStorage.getItem('mind_reserved') || '2');
+  let qty = 1, size = 'M';
+  let adminReserved = reserved;
 
   function avail() { return TOTAL - reserved; }
 
@@ -199,6 +318,9 @@
     const used = reserved + (h || 0);
     document.getElementById('bfill').style.width = (used / TOTAL * 100).toFixed(1) + '%';
     document.getElementById('avail-n').textContent = avail() - (h || 0);
+    document.getElementById('total-n').textContent = TOTAL;
+    document.getElementById('footer-total').textContent = TOTAL;
+    document.getElementById('urgency-text').textContent = reserved + ' peça' + (reserved !== 1 ? 's' : '') + ' já reservada' + (reserved !== 1 ? 's' : '');
     renderSlots(h || 0);
   }
 
@@ -208,10 +330,78 @@
     else { document.getElementById('e-qty').style.display = 'none'; }
     qty = Math.max(1, v);
     document.getElementById('qnum').textContent = qty;
-    document.getElementById('total').textContent = 'R$ ' + (qty * PRICE).toLocaleString('pt-BR');
+    const totalVal = qty * PRICE;
+    document.getElementById('total').textContent = 'R$ ' + totalVal.toLocaleString('pt-BR');
     document.getElementById('qminus').disabled = qty <= 1;
     document.getElementById('qplus').disabled = qty >= max;
     updateBar(qty);
+  }
+
+  // ADMIN
+  document.getElementById('a-num').textContent = adminReserved;
+  document.getElementById('a-minus').addEventListener('click', () => {
+    adminReserved = Math.max(0, adminReserved - 1);
+    document.getElementById('a-num').textContent = adminReserved;
+  });
+  document.getElementById('a-plus').addEventListener('click', () => {
+    adminReserved = Math.min(TOTAL, adminReserved + 1);
+    document.getElementById('a-num').textContent = adminReserved;
+  });
+  document.getElementById('a-save').addEventListener('click', () => {
+    reserved = adminReserved;
+    localStorage.setItem('mind_reserved', reserved);
+    updateBar(0);
+    updateQty(Math.min(qty, avail()));
+    const saved = document.getElementById('a-saved');
+    saved.style.opacity = '1';
+    setTimeout(() => saved.style.opacity = '0', 2000);
+  });
+
+  // QR CODE PIX
+  function generateQR(amount) {
+    document.getElementById('qrcode').innerHTML = '';
+    const pixPayload = generatePixPayload(PIX_KEY, 'MIND EXCLUSIVE', 'SAO PAULO', amount);
+    new QRCode(document.getElementById('qrcode'), {
+      text: pixPayload,
+      width: 180,
+      height: 180,
+      colorDark: '#1a1a1a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  function generatePixPayload(key, name, city, amount) {
+    function field(id, value) {
+      const len = value.length.toString().padStart(2, '0');
+      return id + len + value;
+    }
+    const merchantAccount = field('00', 'BR.GOV.BCB.PIX') + field('01', key);
+    const amt = amount.toFixed(2);
+    let payload =
+      field('00', '01') +
+      field('26', merchantAccount) +
+      field('52', '0000') +
+      field('53', '986') +
+      field('54', amt) +
+      field('58', 'BR') +
+      field('59', name.substring(0, 25)) +
+      field('60', city.substring(0, 15)) +
+      field('62', field('05', '***'));
+    payload += field('63', crc16(payload + '6304'));
+    return payload;
+  }
+
+  function crc16(str) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < str.length; i++) {
+      crc ^= str.charCodeAt(i) << 8;
+      for (let j = 0; j < 8; j++) {
+        crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+      }
+    }
+    crc &= 0xFFFF;
+    return crc.toString(16).toUpperCase().padStart(4, '0');
   }
 
   updateBar(0);
@@ -227,25 +417,25 @@
   document.getElementById('qminus').addEventListener('click', () => updateQty(qty - 1));
   document.getElementById('qplus').addEventListener('click', () => updateQty(qty + 1));
 
-  const wpp = document.getElementById('wpp');
-  wpp.addEventListener('input', () => {
-    let v = wpp.value.replace(/\D/g, '').slice(0, 11);
+  const wppEl = document.getElementById('wpp');
+  wppEl.addEventListener('input', () => {
+    let v = wppEl.value.replace(/\D/g, '').slice(0, 11);
     if (v.length > 6) v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
     else if (v.length > 2) v = '(' + v.slice(0,2) + ') ' + v.slice(2);
-    wpp.value = v;
+    wppEl.value = v;
     document.getElementById('e-wpp').style.display = 'none';
-    wpp.classList.remove('err');
+    wppEl.classList.remove('err');
   });
-
   document.getElementById('email').addEventListener('input', () => {
     document.getElementById('e-email').style.display = 'none';
     document.getElementById('email').classList.remove('err');
   });
 
+  // SUBMIT FORM → GO TO PAYMENT
   document.getElementById('subbtn').addEventListener('click', () => {
     const nome = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
-    const tel = document.getElementById('wpp').value.replace(/\D/g, '');
+    const tel = wppEl.value.replace(/\D/g, '');
     let ok = true;
     if (!nome) { document.getElementById('nome').focus(); ok = false; }
     if (!email || !email.includes('@') || !email.includes('.')) {
@@ -254,11 +444,50 @@
     }
     if (tel.length < 10) {
       document.getElementById('e-wpp').style.display = 'block';
-      wpp.classList.add('err'); ok = false;
+      wppEl.classList.add('err'); ok = false;
     }
     if (!ok) return;
-    reserved += qty;
+
+    const totalVal = qty * PRICE;
+    document.getElementById('pay-total').textContent = 'R$ ' + totalVal.toLocaleString('pt-BR');
+    document.getElementById('pix-amount').textContent = 'R$ ' + totalVal.toLocaleString('pt-BR');
+    document.getElementById('transfer-total').textContent = 'R$ ' + totalVal.toLocaleString('pt-BR');
+
     document.getElementById('form-wrap').style.display = 'none';
+    document.getElementById('payment-wrap').style.display = 'flex';
+
+    generateQR(totalVal);
+    window.scrollTo(0, 0);
+  });
+
+  // PAYMENT METHOD TOGGLE
+  document.getElementById('opt-pix').addEventListener('click', () => {
+    document.getElementById('opt-pix').classList.add('on');
+    document.getElementById('opt-transfer').classList.remove('on');
+    document.getElementById('pix-panel').classList.add('show');
+    document.getElementById('transfer-panel').classList.remove('show');
+  });
+  document.getElementById('opt-transfer').addEventListener('click', () => {
+    document.getElementById('opt-transfer').classList.add('on');
+    document.getElementById('opt-pix').classList.remove('on');
+    document.getElementById('transfer-panel').classList.add('show');
+    document.getElementById('pix-panel').classList.remove('show');
+  });
+
+  // COPY PIX KEY
+  document.getElementById('copy-pix').addEventListener('click', () => {
+    navigator.clipboard.writeText(PIX_KEY_DISPLAY).then(() => {
+      const btn = document.getElementById('copy-pix');
+      btn.textContent = 'Copiado!';
+      setTimeout(() => btn.textContent = 'Copiar', 2000);
+    });
+  });
+
+  // CONFIRM PAYMENT
+  document.getElementById('confirm-btn').addEventListener('click', () => {
+    reserved += qty;
+    localStorage.setItem('mind_reserved', reserved);
+    document.getElementById('payment-wrap').style.display = 'none';
     const sc = document.getElementById('success');
     sc.style.display = 'flex';
     document.getElementById('sref').textContent = 'Ref #ME-' + Math.floor(Math.random() * 9000 + 1000);
